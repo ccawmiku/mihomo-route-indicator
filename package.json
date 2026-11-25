@@ -1,0 +1,20 @@
+{
+  "name": "mihomo-route-indicator",
+  "version": "1.0.0",
+  "description": "Chrome/Chromium MV3 extension that overlays Mihomo routing group badges onto tab favicons.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "icons": "node scripts/generate-icons.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.312",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}

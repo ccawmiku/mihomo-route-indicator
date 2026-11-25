@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mihomo Route Indicator</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup">
+      <header class="top-bar">
+        <div class="brand">
+          <img src="icons/icon48.png" alt="Logo" class="brand-icon" />
+          <div>
+            <div class="brand-title">Mihomo Route Indicator</div>
+            <div id="ctrlStatusLine" class="ctrl-status">Controller: 检测中...</div>
+          </div>
+        </div>
+        <button id="openOptionsBtn" class="btn-settings" type="button" title="打开设置">设置</button>
+      </header>
+
+      <section class="tab-summary card">
+        <div class="tab-head">
+          <div class="favicon-preview-box">
+            <canvas id="popupFaviconCanvas" width="48" height="48"></canvas>
+          </div>
+          <div class="tab-meta">
+            <div class="tab-title-row">
+              <span id="tabDomain" class="tab-domain">-</span>
+              <span id="overallStatusBadge" class="overall-badge overall-UNKNOWN">UNKNOWN</span>
+            </div>
+            <div id="tabUrlText" class="tab-url">-</div>
+            <div id="tabStatsLine" class="tab-stats">请求 0 · 已关联 0 · 未知 0</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">当前页面涉及的分流组</div>
+        <div id="groupsList" class="groups-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">最近关联连接</div>
+        <div id="connectionsList" class="connections-list"></div>
+      </section>
+
+      <div id="limitationNotice" class="notice" hidden></div>
+    </div>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

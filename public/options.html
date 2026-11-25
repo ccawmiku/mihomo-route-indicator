@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mihomo Route Indicator 设置</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <h1>Mihomo Route Indicator</h1>
+          <p class="subtitle">基于 Mihomo / Clash Meta 实际代理链 (chains) 的标签页 Favicon 分流标记</p>
+        </div>
+        <div class="header-actions">
+          <span id="saveToast" class="toast" hidden>已保存</span>
+          <button id="saveAllBtn" class="btn btn-primary" type="button">保存全部设置</button>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>1. Mihomo External Controller 设置</h2>
+          <div id="controllerStatusBadge" class="status-pill status-disconnected">检查中...</div>
+        </div>
+        <div class="grid-4">
+          <label class="field">
+            <span>Controller 地址</span>
+            <input id="ctrlHost" type="text" placeholder="127.0.0.1" />
+          </label>
+          <label class="field">
+            <span>端口</span>
+            <input id="ctrlPort" type="number" min="1" max="65535" placeholder="9090" />
+          </label>
+          <label class="field">
+            <span>Secret（可选）</span>
+            <input id="ctrlSecret" type="password" placeholder="未设置则留空" />
+          </label>
+          <label class="field field-checkbox">
+            <span>协议选项</span>
+            <span class="checkbox-row">
+              <input id="ctrlTls" type="checkbox" />
+              <span>使用 HTTPS / WSS</span>
+            </span>
+          </label>
+        </div>
+        <div class="controller-toolbar">
+          <div class="btn-group">
+            <button id="testConnBtn" class="btn btn-secondary" type="button">测试连接</button>
+            <button id="reconnectBtn" class="btn btn-ghost" type="button">重连后台</button>
+          </div>
+          <div id="testResultBox" class="test-result"></div>
+        </div>
+        <div id="controllerDetailText" class="muted-note"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>2. 分流组映射与角标外观</h2>
+          <div class="btn-group">
+            <button id="importGroupsBtn" class="btn btn-secondary" type="button">从 Mihomo 导入策略组</button>
+            <button id="clearGroupsBtn" class="btn btn-ghost" type="button">清空分流组</button>
+            <button id="addGroupBtn" class="btn btn-ghost" type="button">+ 添加分流组</button>
+          </div>
+        </div>
+        <div id="importGroupsPanel" class="import-panel" hidden>
+          <div class="import-panel-head">
+            <span id="importPanelSummary" class="import-summary">正在从 Mihomo 获取策略组...</span>
+            <div class="btn-group">
+              <button id="importSelectAllNewBtn" class="btn btn-ghost btn-icon" type="button">全选未导入</button>
+              <button id="importApplyBtn" class="btn btn-primary btn-icon" type="button">导入所选策略组</button>
+              <button id="importCloseBtn" class="btn btn-ghost btn-icon" type="button">收起</button>
+            </div>
+          </div>
+          <div id="importGroupsList" class="import-list"></div>
+        </div>
+        <p class="muted-note">
+          匹配仅针对 Mihomo 连接的 <code>chains</code>（实际代理链路）成员，不会将 <code>rule</code> 名称误认为分流组。
+          每条连接按以下优先级从高到低匹配首个命中的分流组；最多显示前 4 个，位置按 <strong>右下 → 左下 → 左上 → 右上</strong> 顺时针固定排列。
+        </p>
+        <div class="table-wrap">
+          <table class="group-table">
+            <thead>
+              <tr>
+                <th style="width: 48px">启用</th>
+                <th style="width: 82px">优先级</th>
+                <th style="width: 170px">分流组名称</th>
+                <th style="width: 104px">匹配模式</th>
+                <th>匹配内容（策略组名称）</th>
+                <th style="width: 112px">形状</th>
+                <th style="width: 164px">预置颜色</th>
+                <th style="width: 64px">预览</th>
+                <th style="width: 62px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="groupsTableBody"></tbody>
+          </table>
+          <div id="groupsEmptyState" class="empty-groups" hidden>
+            暂无分流组配置，请点击上方「从 Mihomo 导入策略组」一键拉取，或点击「+ 添加分流组」手动创建。
+          </div>
+        </div>
+        <div id="regexErrorBanner" class="error-banner" hidden></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>3. Favicon 叠加与预览</h2>
+        </div>
+        <div class="favicon-grid">
+          <div class="favicon-controls">
+            <label class="checkbox-row">
+              <input id="favEnabled" type="checkbox" />
+              <span>启用标签页 Favicon 分流标记叠加</span>
+            </label>
+
+            <label class="field">
+              <span>标记大小：<strong id="favSizeVal">20</strong> px（基于 64×64 画布）</span>
+              <input id="favSize" type="range" min="12" max="28" step="1" />
+            </label>
+
+            <label class="field">
+              <span>描边宽度：<strong id="favStrokeVal">2.5</strong> px</span>
+              <input id="favStroke" type="range" min="0" max="6" step="0.5" />
+            </label>
+
+            <div class="grid-2">
+              <label class="field">
+                <span>描边颜色</span>
+                <input id="favStrokeColor" type="color" />
+              </label>
+              <label class="field">
+                <span>无活跃连接保留时间（秒）</span>
+                <input id="favRetentionSec" type="number" min="2" max="120" step="1" />
+              </label>
+            </div>
+          </div>
+
+          <div class="preview-panel">
+            <div class="preview-title">实时叠加效果预览（前 4 个已启用分流组）</div>
+            <div class="preview-boxes">
+              <div class="preview-item">
+                <canvas id="previewCanvas64" width="64" height="64"></canvas>
+                <span>64×64 画布</span>
+              </div>
+              <div class="preview-item">
+                <canvas id="previewCanvas32" width="32" height="32"></canvas>
+                <span>32×32 高清</span>
+              </div>
+              <div class="preview-item">
+                <canvas id="previewCanvas16" width="16" height="16"></canvas>
+                <span>16×16 标签页</span>
+              </div>
+            </div>
+            <div id="previewLegend" class="preview-legend"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
